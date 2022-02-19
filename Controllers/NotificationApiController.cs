@@ -38,7 +38,12 @@ public class NotificationApiController : ControllerBase
     {
         if (ModelState.IsValid)
         {
-            Console.Write(notificationApiModel.ToString());
+            var outputString = String.Format("First Name: {0}, Last Name: {1}, IsEmailSelected: {2}, IsPhoneSelected: {3}, Email: {4}, Phone: {5}, Supervisor: {6}", 
+            notificationApiModel.FirstName, notificationApiModel.LastName, notificationApiModel.IsEmailSelected ? "True" : "False", 
+            notificationApiModel.IsPhoneSelected ? "True" : "False", notificationApiModel.Email, notificationApiModel.PhoneNumber, notificationApiModel.Supervisor);
+
+            System.Diagnostics.Debug.WriteLine(outputString);
+            Console.Write(outputString);
             return Ok("Request successful.");
         }
         return BadRequest("Failed to submit.");
@@ -54,16 +59,16 @@ public class NotificationApiController : ControllerBase
             response.EnsureSuccessStatusCode();
             string responseBody = await response.Content.ReadAsStringAsync();
 
-            var supervisors = JsonSerializer.Deserialize<List<SupervisorJson>>(responseBody, new JsonSerializerOptions{AllowTrailingCommas = true}) ?? new List<SupervisorJson>();
+            var supervisors = JsonSerializer.Deserialize<List<SupervisorJson>>(responseBody, new JsonSerializerOptions { AllowTrailingCommas = true }) ?? new List<SupervisorJson>();
 
             //Removing numeric jurisdictions.
-            supervisors.RemoveAll(o => int.TryParse(o.jurisdiction, out int tempInt)); 
+            supervisors.RemoveAll(o => int.TryParse(o.jurisdiction, out int tempInt));
 
             //Sorting alphabetically by jurisdiction, last name, then first name.
             supervisors = supervisors.OrderBy(o => o.jurisdiction).ThenBy(o => o.lastName).ThenBy(o => o.firstName).ToList();
 
             //FormatException with "jurisdiction - lastName, FirstName"
-            supervisors.ForEach(o => 
+            supervisors.ForEach(o =>
             {
                 var supervisorString = String.Format("{0} - {1}, {2}", o.jurisdiction, o.lastName, o.firstName);
                 returnList.Add(supervisorString);
