@@ -7,6 +7,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.WebHost.UseUrls("https://localhost:7041;http://localhost:5196");
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
